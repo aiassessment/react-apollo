@@ -24,6 +24,7 @@ const LinkShortener = () => {
   const [url, setUrl] = useState("");
   const [slugTaken, setSlugTaken] = useState(false);
   const [submitAvailable, setSubmitAvailable] = useState(false);
+  const [justCopiedUrl, setJustCopiedUrl] = useState("");
   const [addLink, { data: newData }] = useMutation(CREATE_LINK);
   const [justSubmitted, setJustSubmitted] = useState(false);
   const { loading, error, data, refetch } = useQuery(GET_LINK_BY_SLUG, {
@@ -37,7 +38,6 @@ const LinkShortener = () => {
   };
   useEffect(() => {
     if (newData && newData.createLink) {
-      console.log(newData.createLink.url);
       const newLink = {
         originalUrl: newData.createLink.url,
         newUrl: "fake.shorteners/" + newData.createLink.slug
@@ -60,12 +60,21 @@ const LinkShortener = () => {
   }, [data]);
 
   useEffect(() => {
-    if ((slug.length > 0 && slug.length < 4) || justSubmitted) {
+    if (
+      (slug.length > 0 && slug.length < 4) ||
+      justSubmitted ||
+      !url.includes(".")
+    ) {
       setSubmitAvailable(false);
-    } else if (!submitAvailable && !slugTaken && !loading) {
+    } else if (
+      !submitAvailable &&
+      !slugTaken &&
+      !loading &&
+      url.includes(".")
+    ) {
       setSubmitAvailable(true);
     }
-  }, [slug, slugTaken, loading]);
+  }, [slug, slugTaken, loading, url]);
 
   useEffect(() => {
     if (slug.length >= 4) {
@@ -77,6 +86,7 @@ const LinkShortener = () => {
   }, [slug]);
 
   const copyToClipboard = (txt) => {
+    setJustCopiedUrl(txt);
     const el = document.createElement("textarea");
     el.value = txt;
     document.body.appendChild(el);
@@ -84,6 +94,10 @@ const LinkShortener = () => {
     document.execCommand("copy");
     document.body.removeChild(el);
   };
+
+  useEffect(() => {
+    console.log(justCopiedUrl);
+  }, [justCopiedUrl]);
 
   return (
     <div>
@@ -107,12 +121,21 @@ const LinkShortener = () => {
             "Slug must be at least 5 characters"}
         </div>
       )}
-      {allLinks.map((l) => (
-        <div key={l.slug}>
-          <span>{l.originalUrl} -></span> <input value={l.newUrl} />{" "}
-          <button onClick={() => copyToClipboard(l.newUrl)}>COPY</button>
-        </div>
-      ))}
+      <div className="text-center">
+        {allLinks.map((l) => (
+          <div key={l.slug}>
+            <span>{l.originalUrl} -></span>{" "}
+            <input
+              className="border-2 border-gray-200 p-2 m-1"
+              value={l.newUrl}
+            />{" "}
+            <button onClick={() => copyToClipboard(l.newUrl)}>📋</button>
+            {justCopiedUrl == l.newUrl && (
+              <span className="text-blue-400">Copied!</span>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
