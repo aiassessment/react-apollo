@@ -1,4 +1,5 @@
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import SlugInput from "./Components/SlugInput";
 
 const client = new ApolloClient({
   uri: "https://8opwz.sse.codesandbox.io/",
@@ -9,7 +10,7 @@ export default function App() {
   return (
     <ApolloProvider client={client}>
       <div className="App">
-        <div className="">Test</div>
+        <SlugInput />
       </div>
     </ApolloProvider>
   );

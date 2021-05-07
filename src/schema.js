@@ -1,18 +1,19 @@
 const { gql } = require("apollo-server");
 
 const typeDefs = gql`
-  type User {
+  type Link {
     id: Int!
-    name: String!
-    email: String!
+    url: String!
+    slut: String
   }
 
   type Query {
-    user(id: Int!): User
+    link(slug: string!): Link
+    allLinks()
   }
 
   type Mutation {
-    createUser(name: String!, email: String!): User!
+    createLink(url: String!, slug: String): Link!
   }
 `;
 
