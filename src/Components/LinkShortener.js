@@ -76,9 +76,18 @@ const LinkShortener = () => {
     }
   }, [slug]);
 
+  const copyToClipboard = (txt) => {
+    const el = document.createElement("textarea");
+    el.value = txt;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand("copy");
+    document.body.removeChild(el);
+  };
+
   return (
     <div>
-      <div className="bg-blue-400 p-2 mx-auto flex justify-center">
+      <div className="bg-blue-400 p-2 mx-auto flex flex-wrap justify-center">
         <UrlInput url={url} setUrl={setUrl} />
         <SlugInput setSlug={setSlug} slug={slug} data={data} />
         <button
@@ -99,8 +108,9 @@ const LinkShortener = () => {
         </div>
       )}
       {allLinks.map((l) => (
-        <div>
-          {l.originalUrl} >> {l.newUrl}
+        <div key={l.slug}>
+          <span>{l.originalUrl} -></span> <input value={l.newUrl} />{" "}
+          <button onClick={() => copyToClipboard(l.newUrl)}>COPY</button>
         </div>
       ))}
     </div>
